@@ -54,7 +54,7 @@ def callback():
 
     if (result.status_code != 200):
         return json.dumps({
-            "error" : "failed to exchange auth code for access token"
+            "error" : f"{result.status_code} : failed to exchange auth code for access token"
         }), 500
 
     access_token = json.loads(result.text).get("access_token")
@@ -64,6 +64,13 @@ def callback():
     response.set_cookie("access_token", access_token)
     return response
 
+# placeholder for the "real" site after authentication
+@app.route("/")
+def main():
+    access_token = request.cookies.get("access_token")
+    # todo make request for actual data from resource server w/ token
+
+    return render_template("main.html")
 
 if __name__ == "__main__":
     app.run(port = PORT, debug = True)

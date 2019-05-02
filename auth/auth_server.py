@@ -1,7 +1,11 @@
 import urllib.parse as UrlParser
+
 from flask import *
 
 PORT = 5001
+TOKEN_TYPE = "JWT"
+
+TOKEN_EXPIRY = "100"
 
 app = Flask(__name__)
 
@@ -52,6 +56,34 @@ def signin():
     # https://en.wikipedia.org/wiki/HTTP_303
     # indicates that we're redirecting to another uri
     return redirect(new_redirect_url, code = 303)
+
+# accepts auth code and exchanges it for an access token
+@app.route("/token", methods = ["POST"])
+def exchange_auth():
+    auth_code = request.form.get("authorization_code")
+    client_id = request.form.get("client_id")
+    client_secret = request.form.get("client_secret")
+    redirect_url = request.form.get("redirect_url")
+
+    if (None in [auth_code, client_id, client_secret, redirect_url]):
+        return json.dumps({
+            "error": "invalid request"
+        }), 400
+    
+    # TODO check if client id & secret combo is valid
+    # TODO check if auth code is valid
+
+    # TODO create method for generating access token
+    access_token = "test_access_token"
+
+    # access token has three fields: actual token, type, expiry
+    return json.dumps({
+        "access_token": access_token,
+        "token_type": TOKEN_TYPE,
+        "expires_in": TOKEN_EXPIRY
+    })
+
+
 
 # region helpers
 
