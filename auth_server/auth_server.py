@@ -1,4 +1,5 @@
 import urllib.parse as UrlParser
+import auth as Auth
 
 from flask import *
 
@@ -49,8 +50,7 @@ def signin():
     # TODO check if user + pass is correct
 
     # generate auth code and stick it on to the redirect
-    # TODO create method for generating auth code later
-    auth_code = "TODO"
+    auth_code = Auth.generate_auth_code(client_id)
     new_redirect_url = consolidate_redirect(redirect_url, auth_code)
 
     # https://en.wikipedia.org/wiki/HTTP_303
@@ -71,7 +71,11 @@ def exchange_auth():
         }), 400
     
     # TODO check if client id & secret combo is valid
-    # TODO check if auth code is valid
+    
+    if (not Auth.check_auth_code(client_id, auth_code)):
+        return json.dumps({
+            "error": "invalid auth code"
+        }), 400
 
     # TODO create method for generating access token
     access_token = "test_access_token"
@@ -82,7 +86,6 @@ def exchange_auth():
         "token_type": TOKEN_TYPE,
         "expires_in": TOKEN_EXPIRY
     })
-
 
 
 # region helpers

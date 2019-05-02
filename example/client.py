@@ -1,5 +1,4 @@
 import requests
-import auth as Auth
 
 from flask import (
     Flask, 
@@ -55,7 +54,7 @@ def callback():
 
     if (result.status_code != 200):
         return json.dumps({
-            "error" : f"{result.status_code} : failed to exchange auth code for access token"
+            "error" : f"failed to exchange auth code for access token \n{result.text}"
         }), 500
 
     access_token = json.loads(result.text).get("access_token")
