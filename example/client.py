@@ -16,6 +16,7 @@ CLIENT_SECRET = "example_client_secret"
 
 PORT = 5000
 AUTH_SERVER = "http://localhost:5001"
+RES_SERVER = "http://localhost:5002"
 
 AUTH_URL = f"{AUTH_SERVER}/auth"
 TOKEN_URL = f"{AUTH_SERVER}/token"
@@ -67,10 +68,26 @@ def callback():
 # placeholder for the "real" site after authentication
 @app.route("/")
 def main():
+    user_id = 10001
     access_token = request.cookies.get("access_token")
+    
     # todo make request for actual data from resource server w/ token
+    result = requests.get(RES_SERVER + f"/current_user?user_id={user_id}", headers = {
+        "Authorization" : f"Bearer {access_token}"
+    })
 
-    return render_template("main.html")
+    if (result.status_code != 200):
+        return json.dumps({
+            "error" : f"issue retrieving resource {result.text}"
+        }), 500
+
+    user = json.loads(result.text).get("user")
+    if (user == None):
+        return json.dumps({
+                "error" : f"doesn't look like a user with id '{user_id}' exists"
+        }), 400
+
+    return render_template("main.html", user = user)
 
 if __name__ == "__main__":
     app.run(port = PORT, debug = True)

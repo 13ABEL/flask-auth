@@ -50,8 +50,8 @@ def generate_access_token():
     # the example repo I followed uses jwt for the access token
     # I decided to stick with it because our resource server is separate from our authentication server
     payload = {
-        "issuer" : Config.ISSUER,
-        "expiry" : Time.time() + Config.TOKEN_EXPIRY
+        "iss" : Config.ISSUER,
+        "exp" : Time.time() + Config.TOKEN_EXPIRY
     }
     
     return JWT.encode(payload, Config.PRIVATE_KEY, algorithm = Config.ENCRYPT_ALGO)
