@@ -1,8 +1,10 @@
 import base64
 import string as String
-
+import jwt as JWT
 import random as Random
-import auth_config
+import time as Time
+
+import config as Config
 import db as DB_layer
 
 driver = DB_layer.Driver()
@@ -44,3 +46,12 @@ def check_auth_code(client_id, auth_code):
 
     return True
 
+def generate_access_token():
+    # the example repo I followed uses jwt for the access token
+    # I decided to stick with it because our resource server is separate from our authentication server
+    payload = {
+        "issuer" : Config.ISSUER,
+        "expiry" : Time.time() + Config.TOKEN_EXPIRY
+    }
+    
+    return JWT.encode(payload, Config.PRIVATE_KEY, algorithm = Config.ENCRYPT_ALGO)

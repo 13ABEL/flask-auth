@@ -1,8 +1,7 @@
 import pymongo as Pymongo
-import yaml as yaml
+import config as Config
 
 # constants 
-CONFIG = "../config.yaml"
 ENDPOINT = "mongodb+srv://%s:%s@cluster0-papif.mongodb.net/test?retryWrites=true"
 
 # endregion init
@@ -10,14 +9,7 @@ class Driver():
     _client = None
 
     def __init__(self):
-        with open(CONFIG) as f:
-            # loads the username and password from yaml config file
-            configMap = yaml.safe_load(f)
-            user = configMap["secrets"]["mongoDB"]["user"]
-            password = configMap["secrets"]["mongoDB"]["password"]
-            
-            print(ENDPOINT % (user, password))  
-            self._client = Pymongo.MongoClient(ENDPOINT % (user, password))
+        self._client = Pymongo.MongoClient(ENDPOINT % (Config.USER, Config.PASSWORD))
 
     def getClient(self):
         return self._client

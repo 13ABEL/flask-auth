@@ -3,10 +3,9 @@ import auth as Auth
 
 from flask import *
 
-PORT = 5001
-TOKEN_TYPE = "JWT"
+import config as Config
 
-TOKEN_EXPIRY = "100"
+TOKEN_TYPE = "JWT"
 
 app = Flask(__name__)
 
@@ -78,13 +77,13 @@ def exchange_auth():
         }), 400
 
     # TODO create method for generating access token
-    access_token = "test_access_token"
-
+    access_token = Auth.generate_access_token()
+    
     # access token has three fields: actual token, type, expiry
     return json.dumps({
         "access_token": access_token,
         "token_type": TOKEN_TYPE,
-        "expires_in": TOKEN_EXPIRY
+        "expires_in": Config.TOKEN_EXPIRY
     })
 
 
@@ -108,4 +107,4 @@ def consolidate_redirect(redirect_url, auth_code):
 # endregion helpers
 
 if __name__ == "__main__":
-    app.run(port = PORT, debug = True)
+    app.run(port = Config.PORT, debug = True)
