@@ -1,19 +1,18 @@
 import base64
-import string as String
-import jwt as JWT
-import random as Random
-import time as Time
+import string
+import jwt
+import random
+import time
 
-import config as Config
-import db as DB_layer
+from . import (config, db)
 
-driver = DB_layer.Driver()
+driver = db.Driver()
 
 def generate_auth_code(client_id):
     auth_code = ""
     # we can use any randomly generated string
     for i in range(10):
-        auth_code += Random.choice(String.ascii_letters)
+        auth_code += random.choice(string.ascii_letters)
     
     # store auth code in db
     auth_collection = driver.getClient()["auth_db"]["auth_coll"]
@@ -50,8 +49,8 @@ def generate_access_token():
     # the example repo I followed uses jwt for the access token
     # I decided to stick with it because our resource server is separate from our authentication server
     payload = {
-        "iss" : Config.ISSUER,
-        "exp" : Time.time() + Config.TOKEN_EXPIRY
+        "iss" : config.ISSUER,
+        "exp" : time.time() + config.TOKEN_EXPIRY
     }
     
-    return JWT.encode(payload, Config.PRIVATE_KEY, algorithm = Config.ENCRYPT_ALGO)
+    return jwt.encode(payload, config.PRIVATE_KEY, algorithm = config.ENCRYPT_ALGO)

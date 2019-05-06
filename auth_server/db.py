@@ -1,5 +1,6 @@
-import pymongo as Pymongo
-import config as Config
+import pymongo
+
+from . import config
 
 # constants 
 ENDPOINT = "mongodb+srv://%s:%s@cluster0-papif.mongodb.net/test?retryWrites=true"
@@ -9,7 +10,7 @@ class Driver():
     _client = None
 
     def __init__(self):
-        self._client = Pymongo.MongoClient(ENDPOINT % (Config.USER, Config.PASSWORD))
+        self._client = pymongo.MongoClient(ENDPOINT % (config.USER, config.PASSWORD))
 
     def getClient(self):
         return self._client

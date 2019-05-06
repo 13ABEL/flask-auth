@@ -10,7 +10,6 @@ from flask import (
     url_for
 )
 
-
 CLIENT_ID = "example_client_id"
 CLIENT_SECRET = "example_client_secret"
 

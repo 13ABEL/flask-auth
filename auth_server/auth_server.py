@@ -1,9 +1,8 @@
-import urllib.parse as UrlParser
-import auth as Auth
+import urllib.parse as urlparse
 
 from flask import *
 
-import config as Config
+from . import (auth, config)
 
 TOKEN_TYPE = "JWT"
 
@@ -13,7 +12,7 @@ app = Flask(__name__)
 
 # sign in page for user
 @app.route("/auth")
-def auth():
+def authentication():
     # parse args from the url
     client_id = request.args.get("client_id")
     redirect_url = request.args.get("redirect_url")
@@ -49,7 +48,7 @@ def signin():
     # TODO check if user + pass is correct
 
     # generate auth code and stick it on to the redirect
-    auth_code = Auth.generate_auth_code(client_id)
+    auth_code = auth.generate_auth_code(client_id)
     new_redirect_url = consolidate_redirect(redirect_url, auth_code)
 
     # https://en.wikipedia.org/wiki/HTTP_303
@@ -71,19 +70,19 @@ def exchange_auth():
     
     # TODO check if client id & secret combo is valid
     
-    if (not Auth.check_auth_code(client_id, auth_code)):
+    if (not auth.check_auth_code(client_id, auth_code)):
         return json.dumps({
             "error": "invalid auth code"
         }), 400
 
     # TODO create method for generating access token
-    access_token = Auth.generate_access_token()
+    access_token = auth.generate_access_token()
     
     # access token has three fields: actual token, type, expiry
     return json.dumps({
         "access_token": access_token,
         "token_type": TOKEN_TYPE,
-        "expires_in": Config.TOKEN_EXPIRY
+        "expires_in": config.TOKEN_EXPIRY
     })
 
 
@@ -94,17 +93,17 @@ def consolidate_redirect(redirect_url, auth_code):
     query_index = 4
     print(redirect_url)
 
-    deconstructed_url = list(UrlParser.urlparse(redirect_url))
-    queries = dict(UrlParser.parse_qsl(deconstructed_url[query_index]))
+    deconstructed_url = list(urlparse.urlparse(redirect_url))
+    queries = dict(urlparse.parse_qsl(deconstructed_url[query_index]))
     # update auth code placeholder with actual auth code
     queries["authorization_code"] = auth_code
 
     # need to put everything back into place & "unparse" it
-    deconstructed_url[query_index] = UrlParser.urlencode(queries)
-    return UrlParser.urlunparse(deconstructed_url)
+    deconstructed_url[query_index] = urlparse.urlencode(queries)
+    return urlparse.urlunparse(deconstructed_url)
 
 
 # endregion helpers
 
 if __name__ == "__main__":
-    app.run(port = Config.PORT, debug = True)
+    app.run(port = config.PORT, debug = True)

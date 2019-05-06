@@ -1,20 +1,19 @@
-import jwt as JWT
+import jwt
 
-import config as Config
+from . import config
 
-
-def verify_access_token(jwt):
-    Config.PUBLIC_KEY
+def verify_access_token(jw_token ):
+    config.PUBLIC_KEY
 
     try:
         print(jwt)
-        payload = JWT.decode(jwt, Config.PUBLIC_KEY, issuer = Config.ISSUER, algorithm = Config.ENCRYPT_ALGO, options={'verify_aud': False})
+        payload = jwt.decode(jw_token, config.PUBLIC_KEY, issuer = config.ISSUER, algorithm = config.ENCRYPT_ALGO)
         print(payload)
     
     except(
-        JWT.exceptions.ExpiredSignature, 
-        JWT.exceptions.InvalidIssuerError, 
-        JWT.exceptions.InvalidTokenError
+        jwt.exceptions.ExpiredSignature, 
+        jwt.exceptions.InvalidIssuerError, 
+        jwt.exceptions.InvalidTokenError
         ) as e:
 
         print(f"issue decoding token {e}")

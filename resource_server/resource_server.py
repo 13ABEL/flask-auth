@@ -1,7 +1,6 @@
 from flask import *
 
-import auth as Auth
-import config as Config
+from . import (auth, config)
 
 app = Flask(__name__)
 
@@ -17,7 +16,7 @@ def before_request():
     
     access_token = auth_header[len("Bearer "):]
 
-    if (Auth.verify_access_token(access_token) == False):
+    if (auth.verify_access_token(access_token) == False):
         return json.dumps({
             "error" : "Access token is invalid"
         }), 400
@@ -42,4 +41,4 @@ def current_user():
     
 
 if __name__ == "__main__":
-    app.run(port = Config.PORT, debug = True)
+    app.run(port = config.PORT, debug = True)
