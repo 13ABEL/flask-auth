@@ -42,7 +42,6 @@ def callback():
             "error" : "no authorization code received"
         }), 500
 
-    # TODO implement exchange in authorization server
     # exchange auth code for token
     result = requests.post(TOKEN_URL, data = {
         "grant_type": "authorization_code",

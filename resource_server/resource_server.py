@@ -31,14 +31,13 @@ def current_user():
             "error" : "no user id specified for request"
         }), 400
 
-    # replace with db call later
+    # TODO replace with db call later
     return json.dumps({
         "user" : {
             "first_name" : "richard",
             "last_name" : "wei"
         }
     })    
-    
 
 if __name__ == "__main__":
     app.run(port = config.PORT, debug = True)

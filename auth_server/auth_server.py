@@ -48,7 +48,7 @@ def signin():
     # TODO check if user + pass is correct
 
     # generate auth code and stick it on to the redirect
-    auth_code = auth.generate_auth_code(client_id)
+    auth_code = auth.generate_auth_code(client_id, username)    
     new_redirect_url = consolidate_redirect(redirect_url, auth_code)
 
     # https://en.wikipedia.org/wiki/HTTP_303
@@ -75,8 +75,13 @@ def exchange_auth():
             "error": "invalid auth code"
         }), 400
 
-    # TODO create method for generating access token
-    access_token = auth.generate_access_token()
+    # retrieve the username associated with this auth code to generate token
+    subject = auth.get_username(auth_code)
+    if (subject == None):
+        return json.dumps({
+            "error": "invalid username"
+        }), 400
+    access_token = auth.generate_access_token(subject)
     
     # access token has three fields: actual token, type, expiry
     return json.dumps({
@@ -84,7 +89,6 @@ def exchange_auth():
         "token_type": TOKEN_TYPE,
         "expires_in": config.TOKEN_EXPIRY
     })
-
 
 # region helpers
 
@@ -101,7 +105,6 @@ def consolidate_redirect(redirect_url, auth_code):
     # need to put everything back into place & "unparse" it
     deconstructed_url[query_index] = urlparse.urlencode(queries)
     return urlparse.urlunparse(deconstructed_url)
-
 
 # endregion helpers
 
